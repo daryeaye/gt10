@@ -1335,6 +1335,11 @@ function getPayloadProgressScore(progress) {
       if (!choiceTarget && branchState.page18Choice) {
         choiceTarget = branchState.page18Choice;
       }
+
+if (!choiceTarget && currentPage >= 19 && currentPage <= 24) {
+  currentPage = 18;
+}
+      
       page21ShownAlready = !!safe.page21ShownAlready;
       currentPdfUrl = String(safe.currentPdfUrl || "");
       currentPdfRole = String(safe.currentPdfRole || "");
