@@ -713,6 +713,76 @@ const TUTORIAL_IMAGES = [
   "https://daryeaye.github.io/geotopia/t3.jpg"
 ];
 
+    function payloadHasMeaningfulProgress(progress) {
+  const safe = progress && typeof progress === "object" ? progress : {};
+  const inputValues = safe.inputValues && typeof safe.inputValues === "object" ? safe.inputValues : {};
+  const solved = safe.solvedPages && typeof safe.solvedPages === "object" ? safe.solvedPages : {};
+  const selections = safe.selectionState && typeof safe.selectionState === "object" ? safe.selectionState : {};
+  const incomingDrawings = safe.drawings && typeof safe.drawings === "object" ? safe.drawings : {};
+
+  const hasInputs = Object.values(inputValues).some(v => String(v || "").trim() !== "");
+  const hasSolved = Object.values(solved).some(v => !!v);
+  const hasSelections = [20,21,22,23].some(pageNum => selections[pageNum] === "right");
+  const hasDrawings = Object.values(incomingDrawings).some(arr => Array.isArray(arr) && arr.length > 0);
+
+  const branchChoice =
+    safe.choiceTarget === 25 || safe.choiceTarget === 26 ||
+    (safe.branchState && (safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26));
+
+  const hasOtherProgress =
+    Number(safe.currentPage || 1) > 1 ||
+    Number(safe.maxSeqIndexVisited || 0) > 0 ||
+    branchChoice ||
+    !!safe.page21ShownAlready ||
+    !!safe.currentPdfUrl;
+
+  return hasInputs || hasSolved || hasSelections || hasDrawings || hasOtherProgress;
+}
+
+function getPayloadProgressScore(progress) {
+  const safe = progress && typeof progress === "object" ? progress : {};
+  const inputValues = safe.inputValues && typeof safe.inputValues === "object" ? safe.inputValues : {};
+  const solved = safe.solvedPages && typeof safe.solvedPages === "object" ? safe.solvedPages : {};
+  const selections = safe.selectionState && typeof safe.selectionState === "object" ? safe.selectionState : {};
+  const incomingDrawings = safe.drawings && typeof safe.drawings === "object" ? safe.drawings : {};
+
+  const filledInputs = Object.values(inputValues).filter(v => String(v || "").trim() !== "").length;
+  const solvedCount = Object.values(solved).filter(v => !!v).length;
+  const rightSelections = [20,21,22,23].reduce((sum, pageNum) => {
+    return sum + (selections[pageNum] === "right" ? 1 : 0);
+  }, 0);
+
+  const drawingLines = Object.values(incomingDrawings).reduce((sum, arr) => {
+    return sum + (Array.isArray(arr) ? arr.length : 0);
+  }, 0);
+
+  const maxVisited = Number.isInteger(Number(safe.maxSeqIndexVisited))
+    ? Number(safe.maxSeqIndexVisited)
+    : 0;
+
+  const currentPageNum = Number.isInteger(Number(safe.currentPage))
+    ? Number(safe.currentPage)
+    : 1;
+
+  const branchChoice =
+    safe.choiceTarget === 25 || safe.choiceTarget === 26 ||
+    (safe.branchState && (safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26));
+
+  const page21Bonus = safe.page21ShownAlready ? 20 : 0;
+  const pdfBonus = safe.currentPdfUrl ? 1 : 0;
+  const branchBonus = branchChoice ? 200 : 0;
+
+  return (maxVisited * 1000) +
+         (currentPageNum * 100) +
+         (solvedCount * 25) +
+         (rightSelections * 15) +
+         (filledInputs * 5) +
+         drawingLines +
+         page21Bonus +
+         pdfBonus +
+         branchBonus;
+}
+
     const APP_ID = "powerfall-pt3";
     const WORKER_BASE_URL = "https://geotopia-powerfall-auth-api.daryeaye.workers.dev";
 
@@ -1458,33 +1528,60 @@ const TUTORIAL_IMAGES = [
       }
     }
 
-    async function loginUser() {
-      const usernameInput = document.getElementById("student-username");
-      const passwordInput = document.getElementById("student-password");
+async function loginUser() {
+  const usernameInput = document.getElementById("student-username");
+  const passwordInput = document.getElementById("student-password");
 
-      const username = usernameInput.value.trim().toLowerCase();
-      const password = passwordInput.value;
+  const username = usernameInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
 
-      if (!username || !password) {
-        setAuthStatus("Enter username and password", true);
-        return;
-      }
+  if (!username || !password) {
+    setAuthStatus("Enter username and password", true);
+    return;
+  }
 
-      setAuthStatus("Logging in...");
-      try {
-        const result = await apiFetch("/api/login", {
-          method: "POST",
-          body: JSON.stringify({ username, password, appId: APP_ID })
-        });
+  setAuthStatus("Logging in...");
+  try {
+    const localPayload = buildProgressPayload();
 
-        saveSessionLocally(result.token, result.username || username);
-        await applyProgressPayload(result.saveData || {});
-        passwordInput.value = "";
+    const result = await apiFetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ username, password, appId: APP_ID })
+    });
+
+    saveSessionLocally(result.token, result.username || username);
+    passwordInput.value = "";
+
+    const remotePayload = result.saveData || {};
+    const localHas = payloadHasMeaningfulProgress(localPayload);
+    const remoteHas = payloadHasMeaningfulProgress(remotePayload);
+
+    if (localHas && remoteHas) {
+      const localScore = getPayloadProgressScore(localPayload);
+      const remoteScore = getPayloadProgressScore(remotePayload);
+
+      if (localScore >= remoteScore) {
+        setSaveStatus("Saving...");
+        await saveProgressToServer();
+        setSaveStatus("Saved");
+      } else {
+        await applyProgressPayload(remotePayload);
         setSaveStatus("Loaded");
-      } catch (err) {
-        setAuthStatus(err.message || "Login failed", true);
       }
+    } else if (localHas) {
+      setSaveStatus("Saving...");
+      await saveProgressToServer();
+      setSaveStatus("Saved");
+    } else if (remoteHas) {
+      await applyProgressPayload(remotePayload);
+      setSaveStatus("Loaded");
+    } else {
+      setSaveStatus("Loaded");
     }
+  } catch (err) {
+    setAuthStatus(err.message || "Login failed", true);
+  }
+}
 
     async function loadProgressFromServer() {
       const result = await apiFetch("/api/load?appId=" + encodeURIComponent(APP_ID), {
@@ -1501,24 +1598,50 @@ const TUTORIAL_IMAGES = [
       setSaveStatus("Loaded");
     }
 
-    async function logout() {
-      clearTimeout(autoSaveTimer);
-      try {
-        if (authToken) {
-          await apiFetch("/api/logout", {
-            method: "POST",
-            body: "{}"
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      }
+async function flushPendingSaveBeforeLogout() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = null;
 
-      clearSessionLocally();
-      document.getElementById("student-password").value = "";
-      resetLocalProgressState();
-      setSaveStatus("Logged out");
+  if (!authToken || isApplyingRemoteData) return;
+
+  if (saveInFlight) {
+    saveQueued = true;
+    while (saveInFlight) {
+      await wait(80);
     }
+  }
+
+  await saveProgressToServer();
+
+  while (saveInFlight) {
+    await wait(80);
+  }
+}
+    
+async function logout() {
+  try {
+    setSaveStatus("Saving...");
+    await flushPendingSaveBeforeLogout();
+  } catch (err) {
+    console.error(err);
+  }
+
+  try {
+    if (authToken) {
+      await apiFetch("/api/logout", {
+        method: "POST",
+        body: "{}"
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  clearSessionLocally();
+  document.getElementById("student-password").value = "";
+  resetLocalProgressState();
+  setSaveStatus("Logged out");
+}
 
     function initCloudFields() {
       document.querySelectorAll("[data-savekey]").forEach(el => {
