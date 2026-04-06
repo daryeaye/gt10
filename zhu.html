@@ -713,7 +713,7 @@ const TUTORIAL_IMAGES = [
   "https://daryeaye.github.io/geotopia/t3.jpg"
 ];
 
-    function payloadHasMeaningfulProgress(progress) {
+function payloadHasMeaningfulProgress(progress) {
   const safe = progress && typeof progress === "object" ? progress : {};
   const inputValues = safe.inputValues && typeof safe.inputValues === "object" ? safe.inputValues : {};
   const solved = safe.solvedPages && typeof safe.solvedPages === "object" ? safe.solvedPages : {};
@@ -729,14 +729,11 @@ const TUTORIAL_IMAGES = [
     safe.choiceTarget === 25 || safe.choiceTarget === 26 ||
     (safe.branchState && (safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26));
 
-  const hasOtherProgress =
-    Number(safe.currentPage || 1) > 1 ||
-    Number(safe.maxSeqIndexVisited || 0) > 0 ||
-    branchChoice ||
-    !!safe.page21ShownAlready ||
-    !!safe.currentPdfUrl;
+  const hasPdf = !!safe.currentPdfUrl;
+  const hasPage21Flag = !!safe.page21ShownAlready;
 
-  return hasInputs || hasSolved || hasSelections || hasDrawings || hasOtherProgress;
+  // IMPORTANT: page number alone does NOT count as meaningful progress
+  return hasInputs || hasSolved || hasSelections || hasDrawings || branchChoice || hasPdf || hasPage21Flag;
 }
 
 function getPayloadProgressScore(progress) {
@@ -756,14 +753,6 @@ function getPayloadProgressScore(progress) {
     return sum + (Array.isArray(arr) ? arr.length : 0);
   }, 0);
 
-  const maxVisited = Number.isInteger(Number(safe.maxSeqIndexVisited))
-    ? Number(safe.maxSeqIndexVisited)
-    : 0;
-
-  const currentPageNum = Number.isInteger(Number(safe.currentPage))
-    ? Number(safe.currentPage)
-    : 1;
-
   const branchChoice =
     safe.choiceTarget === 25 || safe.choiceTarget === 26 ||
     (safe.branchState && (safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26));
@@ -772,12 +761,11 @@ function getPayloadProgressScore(progress) {
   const pdfBonus = safe.currentPdfUrl ? 1 : 0;
   const branchBonus = branchChoice ? 200 : 0;
 
-  return (maxVisited * 1000) +
-         (currentPageNum * 100) +
-         (solvedCount * 25) +
-         (rightSelections * 15) +
-         (filledInputs * 5) +
-         drawingLines +
+  // IMPORTANT: do NOT score by currentPage or maxSeqIndexVisited
+  return (solvedCount * 1000) +
+         (rightSelections * 300) +
+         (filledInputs * 10) +
+         (drawingLines * 20) +
          page21Bonus +
          pdfBonus +
          branchBonus;
@@ -1525,7 +1513,9 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
         });
 
         saveSessionLocally(result.token, result.username || username);
-        await applyProgressPayload(result.saveData || {});
+if (result.saveData && typeof result.saveData === "object") {
+  await applyProgressPayload(result.saveData);
+}
         passwordInput.value = "";
         setSaveStatus("Loaded");
       } catch (err) {
@@ -1557,7 +1547,22 @@ async function loginUser() {
     saveSessionLocally(result.token, result.username || username);
     passwordInput.value = "";
 
-    const remotePayload = result.saveData || {};
+    // IMPORTANT: load the real remote save after login
+    let remotePayload = {};
+    try {
+      const loadResult = await apiFetch("/api/load?appId=" + encodeURIComponent(APP_ID), {
+        method: "GET"
+      });
+      remotePayload = (loadResult && loadResult.saveData && typeof loadResult.saveData === "object")
+        ? loadResult.saveData
+        : {};
+    } catch (err) {
+      console.error("Could not load remote save after login:", err);
+      remotePayload = (result.saveData && typeof result.saveData === "object")
+        ? result.saveData
+        : {};
+    }
+
     const localHas = payloadHasMeaningfulProgress(localPayload);
     const remoteHas = payloadHasMeaningfulProgress(remotePayload);
 
@@ -1565,7 +1570,7 @@ async function loginUser() {
       const localScore = getPayloadProgressScore(localPayload);
       const remoteScore = getPayloadProgressScore(remotePayload);
 
-      if (localScore >= remoteScore) {
+      if (localScore > remoteScore) {
         setSaveStatus("Saving...");
         await saveProgressToServer();
         setSaveStatus("Saved");
@@ -1573,13 +1578,13 @@ async function loginUser() {
         await applyProgressPayload(remotePayload);
         setSaveStatus("Loaded");
       }
+    } else if (remoteHas) {
+      await applyProgressPayload(remotePayload);
+      setSaveStatus("Loaded");
     } else if (localHas) {
       setSaveStatus("Saving...");
       await saveProgressToServer();
       setSaveStatus("Saved");
-    } else if (remoteHas) {
-      await applyProgressPayload(remotePayload);
-      setSaveStatus("Loaded");
     } else {
       setSaveStatus("Loaded");
     }
