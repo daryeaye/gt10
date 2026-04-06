@@ -1513,7 +1513,7 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
         });
 
         saveSessionLocally(result.token, result.username || username);
-if (result.saveData && typeof result.saveData === "object") {
+if (result.saveData && payloadHasMeaningfulProgress(result.saveData)) {
   await applyProgressPayload(result.saveData);
 }
         passwordInput.value = "";
