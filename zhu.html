@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,56 +13,53 @@
 
   <style>
     #tutorialOverlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  z-index: 10000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-#tutorialBox{
-  position: relative;
-  width: min(860px, 88vw);
-  height: min(500px, 78vh);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#tutorialImage{
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-}
-
-#tutorialNext{
-  position: absolute;
-  right: -30px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 56px;
-  height: 50%;
-  min-height: 140px;
-  border: none;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.88);
-  color: #111;
-  font-size: 42px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
-  line-height: 1;
-}
-
-#tutorialNext:hover{
-  background: rgba(255,255,255,0.96);
-}
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #tutorialBox{
+      position: relative;
+      width: min(860px, 88vw);
+      height: min(500px, 78vh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #tutorialImage{
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    }
+    #tutorialNext{
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 50%;
+      min-height: 140px;
+      border: none;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.88);
+      color: #111;
+      font-size: 42px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+      line-height: 1;
+      font-family: "Love Ya Like A Sister", cursive;
+    }
+    #tutorialNext:hover{
+      background: rgba(255,255,255,0.96);
+    }
 
     html, body {
       margin: 0;
@@ -113,17 +111,11 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-    #student-username, #student-password {
-      font-size: 16px;
-      padding: 5px 8px;
-      width: 150px;
-      box-sizing: border-box;
-    }
-    #registerBtn, #loginBtn, #logoutBtn, #introBtn, #openFileBtn, #prev-btn, #next-btn, #collapse-widget,
+    #logoutBtn, #introBtn, #authRegisterBtn, #authLoginBtn, #openFileBtn, #prev-btn, #next-btn, #collapse-widget,
     #side-widget button:not(#collapse-widget) {
       font-family: "Love Ya Like A Sister", cursive;
     }
-    #registerBtn, #loginBtn, #logoutBtn, #introBtn {
+    #logoutBtn, #introBtn, #authRegisterBtn, #authLoginBtn {
       font-size: 22px;
       padding: 6px 12px;
       cursor: pointer;
@@ -138,6 +130,65 @@
       color: #222;
       min-width: 170px;
       text-align: right;
+    }
+    #authOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      z-index: 15000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #authOverlayBox {
+      width: min(430px, 88vw);
+      background: #fffdf7;
+      border: 3px solid #000;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      padding: 24px 20px 18px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    #authOverlayTitle {
+      font-family: "Love Ya Like A Sister", cursive;
+      font-size: 34px;
+      line-height: 1.05;
+      margin-bottom: 10px;
+      color: #111;
+    }
+    #authOverlayText {
+      font-family: "Comic Sans MS", sans-serif;
+      font-size: 16px;
+      line-height: 1.35;
+      color: #222;
+      margin-bottom: 14px;
+    }
+    #auth-username, #auth-password {
+      width: 100%;
+      font-size: 18px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      border: 2px solid #000;
+      border-radius: 8px;
+      font-family: "Comic Sans MS", sans-serif;
+      background: #fff;
+    }
+    #authOverlayButtons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    #authModalStatus {
+      font-family: "Comic Sans MS", sans-serif;
+      font-size: 14px;
+      line-height: 1.3;
+      min-height: 18px;
+      margin-top: 12px;
+      color: #222;
     }
     #progressBar {
       flex: 1;
@@ -448,7 +499,6 @@
       border-radius: 6px;
       line-height: 1;
     }
-
     #customPopupOverlay{
       position: fixed;
       inset: 0;
@@ -505,10 +555,6 @@
     <div id="header">
       <div id="topAuthRow">
         <div id="topAuthLeft">
-          <input type="text" id="student-username" placeholder="Username" autocomplete="username" />
-          <input type="password" id="student-password" placeholder="Password" autocomplete="current-password" />
-          <button id="registerBtn" type="button">Register</button>
-          <button id="loginBtn" type="button">Log In</button>
           <button id="logoutBtn" type="button" style="display:none;">Log Out</button>
           <button id="introBtn" type="button" onclick="openIntro()">Intro</button>
         </div>
@@ -699,6 +745,20 @@
     <p><a href="https://translate.google.com/?sl=en&tl=es&op=images" target="_blank">Click me and paste from clipboard</a></p>
   </div>
 
+  <div id="authOverlay">
+    <div id="authOverlayBox">
+      <div id="authOverlayTitle">Sign in to start</div>
+      <div id="authOverlayText">Please log in or register before entering the quest. Username cannot contain spaces.</div>
+      <input type="text" id="auth-username" placeholder="Username" autocomplete="username" />
+      <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password" />
+      <div id="authOverlayButtons">
+        <button id="authRegisterBtn" type="button">Register</button>
+        <button id="authLoginBtn" type="button">Log In</button>
+      </div>
+      <div id="authModalStatus"></div>
+    </div>
+  </div>
+
   <div id="customPopupOverlay">
     <div id="customPopupBox">
       <div id="customPopupMessage"></div>
@@ -708,83 +768,20 @@
 
   <script>
 const TUTORIAL_IMAGES = [
-  "https://daryeaye.github.io/geotopia/t1.jpg",
   "https://daryeaye.github.io/geotopia/t2.jpg",
   "https://daryeaye.github.io/geotopia/t3.jpg"
 ];
-
-function payloadHasMeaningfulProgress(progress) {
-  const safe = progress && typeof progress === "object" ? progress : {};
-  const inputValues = safe.inputValues && typeof safe.inputValues === "object" ? safe.inputValues : {};
-  const solved = safe.solvedPages && typeof safe.solvedPages === "object" ? safe.solvedPages : {};
-  const selections = safe.selectionState && typeof safe.selectionState === "object" ? safe.selectionState : {};
-  const incomingDrawings = safe.drawings && typeof safe.drawings === "object" ? safe.drawings : {};
-
-  const hasInputs = Object.values(inputValues).some(v => String(v || "").trim() !== "");
-  const hasSolved = Object.values(solved).some(v => !!v);
-  const hasSelections = [20,21,22,23].some(pageNum => selections[pageNum] === "right");
-  const hasDrawings = Object.values(incomingDrawings).some(arr => Array.isArray(arr) && arr.length > 0);
-
-  const branchChoice =
-    safe.choiceTarget === 25 || safe.choiceTarget === 26 ||
-    (safe.branchState && (safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26));
-
-  const hasPdf = !!safe.currentPdfUrl;
-  const hasPage21Flag = !!safe.page21ShownAlready;
-
-  // IMPORTANT: page number alone does NOT count as meaningful progress
-  return hasInputs || hasSolved || hasSelections || hasDrawings || branchChoice || hasPdf || hasPage21Flag;
-}
-
-function getPayloadProgressScore(progress) {
-  const safe = progress && typeof progress === "object" ? progress : {};
-  const inputValues = safe.inputValues && typeof safe.inputValues === "object" ? safe.inputValues : {};
-  const solved = safe.solvedPages && typeof safe.solvedPages === "object" ? safe.solvedPages : {};
-  const selections = safe.selectionState && typeof safe.selectionState === "object" ? safe.selectionState : {};
-  const incomingDrawings = safe.drawings && typeof safe.drawings === "object" ? safe.drawings : {};
-
-  const filledInputs = Object.values(inputValues).filter(v => String(v || "").trim() !== "").length;
-  const solvedCount = Object.values(solved).filter(v => !!v).length;
-  const rightSelections = [20,21,22,23].reduce((sum, pageNum) => {
-    return sum + (selections[pageNum] === "right" ? 1 : 0);
-  }, 0);
-
-  const drawingLines = Object.values(incomingDrawings).reduce((sum, arr) => {
-    return sum + (Array.isArray(arr) ? arr.length : 0);
-  }, 0);
-
-  const branchChoice =
-    safe.choiceTarget === 25 || safe.choiceTarget === 26 ||
-    (safe.branchState && (safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26));
-
-  const page21Bonus = safe.page21ShownAlready ? 20 : 0;
-  const pdfBonus = safe.currentPdfUrl ? 1 : 0;
-  const branchBonus = branchChoice ? 200 : 0;
-
-  // IMPORTANT: do NOT score by currentPage or maxSeqIndexVisited
-  return (solvedCount * 1000) +
-         (rightSelections * 300) +
-         (filledInputs * 10) +
-         (drawingLines * 20) +
-         page21Bonus +
-         pdfBonus +
-         branchBonus;
-}
+const TUTORIAL_STORAGE_KEY = "gt10_tutorial_seen";
 
     const APP_ID = "powerfall-pt3";
     const WORKER_BASE_URL = "https://geotopia-powerfall-auth-api.daryeaye.workers.dev";
-
-    // localStorage is used only for the auth session token and username.
-    // Progress itself is cloud-saved per APP_ID and never stored locally.
     const SESSION_STORAGE = {
       token: "gt10_auth_token",
       username: "gt10_auth_username"
     };
-
     const INTRO_URL = "https://youtu.be/F8paV80TGac";
     const WRONG_WARNING = "Hold on! Something’s wrong. We don’t want anyone to leave the livestream!";
     const THINK_AGAIN_MESSAGE = "Think again!";
-
     const totalPages = 26;
     const ROLE_PDF_URLS = {
       officer: "https://daryeaye.github.io/gt8/GT2%20Officer.pdf",
@@ -794,7 +791,7 @@ function getPayloadProgressScore(progress) {
 
     let currentPage = 1;
     let maxSeqIndexVisited = 0;
-    let choiceTarget = null; // 25 or 26
+    let choiceTarget = null;
     let branchState = { page18Choice: null };
     let page21ShownAlready = false;
     let currentPdfUrl = "";
@@ -815,31 +812,25 @@ function getPayloadProgressScore(progress) {
     function openIntro() {
       window.open(INTRO_URL, "_blank");
     }
-
     function setSaveStatus(text) {
       document.getElementById("saveStatus").textContent = text;
     }
-
     function setAuthStatus(message, isError = false) {
       const authStatus = document.getElementById("authStatus");
       authStatus.textContent = message;
       authStatus.style.color = isError ? "#b00020" : "#222";
     }
-
     function closeCustomPopup() {
       document.getElementById("customPopupOverlay").style.display = "none";
       document.getElementById("customPopupMessage").textContent = "";
       document.getElementById("customPopupButtons").innerHTML = "";
     }
-
     function showCustomPopup(message, buttons = [{ text: "OK", action: closeCustomPopup }]) {
       const overlay = document.getElementById("customPopupOverlay");
       const msg = document.getElementById("customPopupMessage");
       const btnWrap = document.getElementById("customPopupButtons");
-
       msg.textContent = message;
       btnWrap.innerHTML = "";
-
       buttons.forEach(btn => {
         const b = document.createElement("button");
         b.className = "popupBtn";
@@ -850,20 +841,14 @@ function getPayloadProgressScore(progress) {
         };
         btnWrap.appendChild(b);
       });
-
       overlay.style.display = "flex";
     }
-
     function showMessagePopup(message) {
-      showCustomPopup(message, [
-        { text: "OK", action: closeCustomPopup }
-      ]);
+      showCustomPopup(message, [{ text: "OK", action: closeCustomPopup }]);
     }
-
     function wait(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-
     async function runCanvasTransition(action) {
       const overlay = document.getElementById("pageTransitionOverlay");
       overlay.style.pointerEvents = "auto";
@@ -875,48 +860,61 @@ function getPayloadProgressScore(progress) {
       await wait(280);
       overlay.style.pointerEvents = "none";
     }
-
-    function getSequence() {
-      if (Number(choiceTarget) === 25) {
-        return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
+    function setAuthModalStatus(message, isError = false) {
+      const status = document.getElementById("authModalStatus");
+      if (!status) return;
+      status.textContent = message || "";
+      status.style.color = isError ? "#b00020" : "#222";
+    }
+    function openAuthOverlay(prefillUsername = "") {
+      const overlay = document.getElementById("authOverlay");
+      const usernameInput = document.getElementById("auth-username");
+      const passwordInput = document.getElementById("auth-password");
+      if (prefillUsername) {
+        usernameInput.value = prefillUsername;
+      } else if (loggedInUsername) {
+        usernameInput.value = loggedInUsername;
       }
-      if (Number(choiceTarget) === 26) {
-        return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26];
+      passwordInput.value = "";
+      setAuthModalStatus("Please sign in to continue.", false);
+      overlay.style.display = "flex";
+      usernameInput.focus();
+    }
+    function closeAuthOverlay() {
+      const overlay = document.getElementById("authOverlay");
+      overlay.style.display = "none";
+      setAuthModalStatus("", false);
+    }
+    function maybeRequireAuthOverlay() {
+      if (!authToken) {
+        openAuthOverlay(loggedInUsername || "");
       }
-      return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];
     }
 
+    function getSequence() {
+      if (Number(choiceTarget) === 25) return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
+      if (Number(choiceTarget) === 26) return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26];
+      return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];
+    }
     function getFinalEndingPage() {
       if (Number(choiceTarget) === 25) return 25;
       if (Number(choiceTarget) === 26) return 26;
       return null;
     }
-
     function normalizeText(value) {
       return String(value || "").trim().toLowerCase();
     }
-
     function getFieldValue(saveKey) {
       const el = document.querySelector(`[data-savekey="${saveKey}"]`);
       return el ? el.value : "";
     }
-
-    function hasText(saveKey) {
-      return normalizeText(getFieldValue(saveKey)) !== "";
-    }
-
-    function containsValue(saveKey, expected) {
-      return normalizeText(getFieldValue(saveKey)).includes(String(expected).toLowerCase());
-    }
-
+    function hasText(saveKey) { return normalizeText(getFieldValue(saveKey)) !== ""; }
+    function containsValue(saveKey, expected) { return normalizeText(getFieldValue(saveKey)).includes(String(expected).toLowerCase()); }
     function containsAll(saveKey, values) {
       const v = normalizeText(getFieldValue(saveKey));
       return values.every(item => v.includes(String(item).toLowerCase()));
     }
-
-    function markPageSolved(pageNum, solved = true) {
-      solvedPages[pageNum] = !!solved;
-    }
+    function markPageSolved(pageNum, solved = true) { solvedPages[pageNum] = !!solved; }
 
     function validatePage(pageNum) {
       switch (pageNum) {
@@ -925,77 +923,53 @@ function getPayloadProgressScore(progress) {
             && containsValue("p3-1", "-3")
             && containsValue("p3-2", "4")
             && containsValue("p3-3", "7");
-
         case 5:
           return hasText("p5-1") && hasText("p5-2") && hasText("p5-3") && containsValue("p5-3", "30");
-
         case 6:
           return hasText("p6-1") && hasText("p6-2") && hasText("p6-3") && containsValue("p6-3", "30");
-
         case 7:
           return hasText("p7-1") && hasText("p7-2") && hasText("p7-3") && containsValue("p7-3", "22");
-
         case 8:
           return hasText("p8-1") && hasText("p8-2") && hasText("p8-3") && containsValue("p8-3", "24");
-
         case 9:
           return hasText("p9-1") && hasText("p9-2") && hasText("p9-3") && containsValue("p9-3", "32");
-
         case 10:
           return hasText("p10-1") && hasText("p10-2") && hasText("p10-3") && hasText("p10-4")
             && containsAll("p10-3", ["9", "-1"])
             && containsValue("p10-4", "32");
-
         case 13:
           return hasText("p13-1") && hasText("p13-2") && hasText("p13-3") && containsValue("p13-3", "80");
-
         case 14:
           return hasText("p14-1") && hasText("p14-2") && hasText("p14-3") && containsValue("p14-3", "15");
-
         case 15:
           return hasText("p15-1") && hasText("p15-2") && hasText("p15-3") && containsValue("p15-3", "160");
-
         case 16:
           return hasText("p16-1") && containsValue("p16-1", "31");
-
         case 17:
           return hasText("p17-1") && hasText("p17-2") && hasText("p17-3") && hasText("p17-4")
             && containsValue("p17-1", "36")
             && containsValue("p17-4", "81");
-
         case 20:
           return hasText("p20-1") && containsValue("p20-1", "pri") && selectionState[20] === "right";
-
         case 21: {
           const v = normalizeText(getFieldValue("p21-1"));
           return v !== "" && (v.includes("cub") || v.includes("pri")) && selectionState[21] === "right";
         }
-
         case 22:
           return hasText("p22-1") && containsValue("p22-1", "pyr") && selectionState[22] === "right";
-
         case 23:
           return hasText("p23-1") && selectionState[23] === "right";
-
         case 24:
           return hasText("p24-1") && hasText("p24-2") && hasText("p24-3")
             && containsValue("p24-1", "6")
             && containsValue("p24-2", "8")
             && containsValue("p24-3", "12");
-
         default:
           return true;
       }
     }
-
-    function requiresCheck(pageNum) {
-      return [3,5,6,7,8,9,10,13,14,15,16,17,20,21,22,23,24].includes(pageNum);
-    }
-
-    function showWrongWarning() {
-      showMessagePopup(WRONG_WARNING);
-    }
-
+    function requiresCheck(pageNum) { return [3,5,6,7,8,9,10,13,14,15,16,17,20,21,22,23,24].includes(pageNum); }
+    function showWrongWarning() { showMessagePopup(WRONG_WARNING); }
     function updateProgress() {
       const seq = getSequence();
       const totalSteps = seq.length;
@@ -1004,40 +978,28 @@ function getPayloadProgressScore(progress) {
       document.getElementById("progress").style.width = pct + "%";
       document.getElementById("progressText").textContent = pct.toFixed(0) + "% completed";
     }
-
     function showPage(pageNum) {
       for (let i = 1; i <= totalPages; i++) {
         document.getElementById("page" + i).classList.remove("active");
       }
       document.getElementById("page" + pageNum).classList.add("active");
       currentPage = pageNum;
-
-      if (pageNum === 21 && !page21ShownAlready) {
-        page21ShownAlready = true;
-      }
-
+      if (pageNum === 21 && !page21ShownAlready) page21ShownAlready = true;
       const seq = getSequence();
       const idx = seq.indexOf(pageNum);
-      if (idx !== -1) {
-        maxSeqIndexVisited = Math.max(maxSeqIndexVisited, idx);
-      }
-
+      if (idx !== -1) maxSeqIndexVisited = Math.max(maxSeqIndexVisited, idx);
       const isFirst = idx <= 0;
       const isLast = idx === seq.length - 1;
       const blockNextOn18 = (pageNum === 18 && !choiceTarget);
-
       document.getElementById("prev-btn").style.display = isFirst ? "none" : "inline-block";
       document.getElementById("next-btn").style.display = (isLast || blockNextOn18) ? "none" : "inline-block";
-
       updateProgress();
     }
-
     async function nextPage() {
       if (currentPage === 18 && !choiceTarget) {
         showWrongWarning();
         return;
       }
-
       if (requiresCheck(currentPage)) {
         const ok = validatePage(currentPage);
         if (!ok) {
@@ -1046,44 +1008,33 @@ function getPayloadProgressScore(progress) {
         }
         markPageSolved(currentPage, true);
       }
-
       if (currentPage === 24) {
         const finalPage = getFinalEndingPage();
         if (!finalPage) {
           showWrongWarning();
           return;
         }
-        await runCanvasTransition(() => {
-          showPage(finalPage);
-        });
+        await runCanvasTransition(() => { showPage(finalPage); });
         queueCloudSave();
         return;
       }
-
       const seq = getSequence();
       const idx = seq.indexOf(currentPage);
       if (idx === -1 || idx >= seq.length - 1) return;
-
-      await runCanvasTransition(() => {
-        showPage(seq[idx + 1]);
-      });
+      await runCanvasTransition(() => { showPage(seq[idx + 1]); });
       queueCloudSave();
     }
-
     function prevPage() {
       const seq = getSequence();
       const idx = seq.indexOf(currentPage);
       if (idx <= 0) return;
-
       showPage(seq[idx - 1]);
       queueCloudSave();
     }
-
     function redrawLines(canvasId) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       (drawings[canvasId] || []).forEach(line => {
         ctx.beginPath();
         ctx.moveTo(line.startX, line.startY);
@@ -1094,45 +1045,17 @@ function getPayloadProgressScore(progress) {
         ctx.stroke();
       });
     }
-
-    function restoreCanvasFromDataUrl(canvasId, dataUrl) {
-      if (!dataUrl) return;
-      const canvas = document.getElementById(canvasId);
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-      img.onload = function () {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      };
-      img.src = dataUrl;
-    }
-
-    function captureDrawingDataUrls() {
-      const result = {};
-      Object.keys(drawings).forEach(canvasId => {
-        const canvas = document.getElementById(canvasId);
-        if (canvas) result[canvasId] = canvas.toDataURL("image/png");
-      });
-      return result;
-    }
-
     function initLineDrawing(canvasId, resetBtnId, maxLines = 10) {
       const canvas = document.getElementById(canvasId);
       const resetBtn = document.getElementById(resetBtnId);
       const ctx = canvas.getContext("2d");
-
       let drawing = false;
       let startX = 0;
       let startY = 0;
-
       function getMousePos(e) {
         const rect = canvas.getBoundingClientRect();
-        return {
-          x: (e.clientX - rect.left) * (canvas.width / rect.width),
-          y: (e.clientY - rect.top) * (canvas.height / rect.height)
-        };
+        return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) };
       }
-
       function previewLine(endX, endY) {
         redrawLines(canvasId);
         ctx.beginPath();
@@ -1143,7 +1066,6 @@ function getPayloadProgressScore(progress) {
         ctx.lineCap = "round";
         ctx.stroke();
       }
-
       canvas.addEventListener("mousedown", function (e) {
         if ((drawings[canvasId] || []).length >= maxLines) return;
         const p = getMousePos(e);
@@ -1152,95 +1074,62 @@ function getPayloadProgressScore(progress) {
         startX = p.x;
         startY = p.y;
       });
-
       canvas.addEventListener("mousemove", function (e) {
         if (!drawing) return;
         const p = getMousePos(e);
         previewLine(p.x, p.y);
       });
-
       canvas.addEventListener("mouseup", function (e) {
         if (!drawing) return;
         drawing = false;
         const p = getMousePos(e);
-        drawings[canvasId].push({
-          startX,
-          startY,
-          endX: p.x,
-          endY: p.y
-        });
+        drawings[canvasId].push({ startX, startY, endX: p.x, endY: p.y });
         redrawLines(canvasId);
         queueCloudSave();
       });
-
       canvas.addEventListener("mouseleave", function () {
         if (!drawing) return;
         drawing = false;
         redrawLines(canvasId);
       });
-
       resetBtn.addEventListener("click", function () {
         drawings[canvasId] = [];
         redrawLines(canvasId);
         queueCloudSave();
       });
     }
-
     function initBranchButtons() {
-      const choice25 = document.getElementById("choice-to-25");
-      const choice26 = document.getElementById("choice-to-26");
-
-      choice25.addEventListener("click", async function () {
+      document.getElementById("choice-to-25").addEventListener("click", async function () {
         choiceTarget = 25;
         branchState.page18Choice = 25;
         markPageSolved(18, true);
-        await runCanvasTransition(() => {
-          showPage(19);
-        });
+        await runCanvasTransition(() => { showPage(19); });
         queueCloudSave();
       });
-
-      choice26.addEventListener("click", async function () {
+      document.getElementById("choice-to-26").addEventListener("click", async function () {
         choiceTarget = 26;
         branchState.page18Choice = 26;
         markPageSolved(18, true);
-        await runCanvasTransition(() => {
-          showPage(19);
-        });
+        await runCanvasTransition(() => { showPage(19); });
         queueCloudSave();
       });
     }
-
     async function moveToNextPageFromHotspot(pageNum) {
       const ok = validatePage(pageNum);
-      if (!ok) {
-        showWrongWarning();
-        return;
-      }
+      if (!ok) { showWrongWarning(); return; }
       markPageSolved(pageNum, true);
       const seq = getSequence();
       const idx = seq.indexOf(pageNum);
       if (idx !== -1 && idx < seq.length - 1) {
-        await runCanvasTransition(() => {
-          showPage(seq[idx + 1]);
-        });
+        await runCanvasTransition(() => { showPage(seq[idx + 1]); });
         queueCloudSave();
       }
     }
-
     function initQuizHotspots() {
       document.querySelectorAll(".quiz-wrong").forEach(btn => {
-        btn.addEventListener("click", function () {
-          showMessagePopup(THINK_AGAIN_MESSAGE);
-        });
+        btn.addEventListener("click", function () { showMessagePopup(THINK_AGAIN_MESSAGE); });
       });
-
-      [
-        ["p20-r", 20],
-        ["p21-r", 21],
-        ["p22-r", 22],
-        ["p23-r", 23]
-      ].forEach(([id, pageNum]) => {
+      [["p20-r",20],["p21-r",21],["p22-r",22],["p23-r",23]].forEach(([id, pageNum]) => {
         const btn = document.getElementById(id);
         if (!btn) return;
         btn.addEventListener("click", function () {
@@ -1250,12 +1139,8 @@ function getPayloadProgressScore(progress) {
         });
       });
     }
-
     function initRewardInputs() {
-      [
-        ["p25-1", "https://daryeaye.github.io/gt10/judy.html"],
-        ["p26-1", "https://daryeaye.github.io/gt10/judy.html"]
-      ].forEach(([saveKey, url]) => {
+      [["p25-1","https://daryeaye.github.io/gt10/judy.html"],["p26-1","https://daryeaye.github.io/gt10/judy.html"]].forEach(([saveKey, url]) => {
         const el = document.querySelector(`[data-savekey="${saveKey}"]`);
         if (!el) return;
         el.addEventListener("input", function () {
@@ -1268,7 +1153,6 @@ function getPayloadProgressScore(progress) {
         });
       });
     }
-
     function getInputSnapshot() {
       const snapshot = {};
       document.querySelectorAll("[data-savekey]").forEach(input => {
@@ -1276,18 +1160,14 @@ function getPayloadProgressScore(progress) {
       });
       return snapshot;
     }
-
     function applyInputSnapshot(snapshot) {
       isApplyingRemoteData = true;
       document.querySelectorAll("[data-savekey]").forEach(input => {
         const key = input.dataset.savekey;
-        input.value = snapshot && Object.prototype.hasOwnProperty.call(snapshot, key)
-          ? (snapshot[key] ?? "")
-          : "";
+        input.value = snapshot && Object.prototype.hasOwnProperty.call(snapshot, key) ? (snapshot[key] ?? "") : "";
       });
       isApplyingRemoteData = false;
     }
-
     function buildProgressPayload() {
       const viewer = document.getElementById("pdfViewer");
       return {
@@ -1306,52 +1186,31 @@ function getPayloadProgressScore(progress) {
         drawings
       };
     }
-
     async function applyProgressPayload(payload) {
       isApplyingRemoteData = true;
-
       const safe = payload && typeof payload === "object" ? payload : {};
-
       applyInputSnapshot(safe.inputValues || {});
-
       currentPage = Number.isInteger(Number(safe.currentPage)) ? Number(safe.currentPage) : 1;
       maxSeqIndexVisited = Number.isInteger(Number(safe.maxSeqIndexVisited)) ? Number(safe.maxSeqIndexVisited) : 0;
       choiceTarget = safe.choiceTarget === 25 || safe.choiceTarget === 26 ? safe.choiceTarget : null;
       branchState = safe.branchState && typeof safe.branchState === "object"
         ? { page18Choice: safe.branchState.page18Choice === 25 || safe.branchState.page18Choice === 26 ? safe.branchState.page18Choice : null }
         : { page18Choice: choiceTarget };
-      if (!choiceTarget && branchState.page18Choice) {
-        choiceTarget = branchState.page18Choice;
-      }
-
-if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
-  currentPage = 18;
-}
-      
+      if (!choiceTarget && branchState.page18Choice) choiceTarget = branchState.page18Choice;
+      if (!choiceTarget && currentPage >= 19 && currentPage <= 26) currentPage = 18;
       page21ShownAlready = !!safe.page21ShownAlready;
       currentPdfUrl = String(safe.currentPdfUrl || "");
       currentPdfRole = String(safe.currentPdfRole || "");
       pdfScrollTop = Number.isFinite(Number(safe.pdfScrollTop)) ? Number(safe.pdfScrollTop) : 0;
-
       const incomingSolved = safe.solvedPages && typeof safe.solvedPages === "object" ? safe.solvedPages : {};
       Object.keys(solvedPages).forEach(k => delete solvedPages[k]);
-      Object.keys(incomingSolved).forEach(k => {
-        solvedPages[k] = !!incomingSolved[k];
-      });
-
+      Object.keys(incomingSolved).forEach(k => { solvedPages[k] = !!incomingSolved[k]; });
       const incomingSelections = safe.selectionState && typeof safe.selectionState === "object" ? safe.selectionState : {};
-      [20,21,22,23].forEach(pageNum => {
-        selectionState[pageNum] = incomingSelections[pageNum] === "right" ? "right" : "";
-      });
-
+      [20,21,22,23].forEach(pageNum => { selectionState[pageNum] = incomingSelections[pageNum] === "right" ? "right" : ""; });
       const incomingDrawings = safe.drawings && typeof safe.drawings === "object" ? safe.drawings : {};
-      Object.keys(drawings).forEach(id => {
-        drawings[id] = Array.isArray(incomingDrawings[id]) ? incomingDrawings[id] : [];
-      });
-
+      Object.keys(drawings).forEach(id => { drawings[id] = Array.isArray(incomingDrawings[id]) ? incomingDrawings[id] : []; });
       redrawLines("draw16");
       showPage(currentPage);
-
       if (currentPdfUrl) {
         try {
           await renderPdfIntoSecondCanvas(currentPdfUrl, currentPdfRole, pdfScrollTop);
@@ -1361,31 +1220,18 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
       } else {
         exitPdfMode();
       }
-
       isApplyingRemoteData = false;
     }
-
     async function apiFetch(path, options = {}) {
       const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-      if (authToken) {
-        headers.Authorization = "Bearer " + authToken;
-      }
-
-      const response = await fetch(WORKER_BASE_URL + path, {
-        ...options,
-        headers
-      });
-
+      if (authToken) headers.Authorization = "Bearer " + authToken;
+      const response = await fetch(WORKER_BASE_URL + path, { ...options, headers });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok || data.ok === false) {
-        throw new Error(data.error || "Request failed.");
-      }
+      if (!response.ok || data.ok === false) throw new Error(data.error || "Request failed.");
       return data;
     }
-
     function queueCloudSave() {
       if (isApplyingRemoteData || !authToken) return;
-
       clearTimeout(autoSaveTimer);
       setSaveStatus("Saving...");
       autoSaveTimer = setTimeout(() => {
@@ -1396,18 +1242,13 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
         saveProgressToServer();
       }, 900);
     }
-
     async function saveProgressToServer() {
       if (!authToken || saveInFlight) return;
-
       saveInFlight = true;
       try {
         await apiFetch("/api/save", {
           method: "POST",
-          body: JSON.stringify({
-            appId: APP_ID,
-            saveData: buildProgressPayload()
-          })
+          body: JSON.stringify({ appId: APP_ID, saveData: buildProgressPayload() })
         });
         setSaveStatus("Saved");
       } catch (err) {
@@ -1421,25 +1262,13 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
         }
       }
     }
-
     function updateAuthUI() {
-      const usernameInput = document.getElementById("student-username");
-      const registerBtn = document.getElementById("registerBtn");
-      const loginBtn = document.getElementById("loginBtn");
       const logoutBtn = document.getElementById("logoutBtn");
-
       const loggedIn = !!authToken;
-      if (loggedIn && loggedInUsername) {
-        usernameInput.value = loggedInUsername;
-      }
-
-      registerBtn.style.display = loggedIn ? "none" : "inline-block";
-      loginBtn.style.display = loggedIn ? "none" : "inline-block";
       logoutBtn.style.display = loggedIn ? "inline-block" : "none";
-
       setAuthStatus(loggedIn ? ("Logged in as " + (loggedInUsername || "student")) : "Not logged in", false);
+      if (loggedIn) closeAuthOverlay();
     }
-
     function saveSessionLocally(token, username) {
       authToken = token || "";
       loggedInUsername = username || "";
@@ -1447,7 +1276,6 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
       localStorage.setItem(SESSION_STORAGE.username, loggedInUsername);
       updateAuthUI();
     }
-
     function clearSessionLocally() {
       authToken = "";
       loggedInUsername = "";
@@ -1455,19 +1283,13 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
       localStorage.removeItem(SESSION_STORAGE.username);
       updateAuthUI();
     }
-
     function restoreSessionLocally() {
       authToken = localStorage.getItem(SESSION_STORAGE.token) || "";
       loggedInUsername = localStorage.getItem(SESSION_STORAGE.username) || "";
-      if (loggedInUsername) {
-        document.getElementById("student-username").value = loggedInUsername;
-      }
       updateAuthUI();
     }
-
     function resetLocalProgressState() {
       isApplyingRemoteData = true;
-
       currentPage = 1;
       maxSeqIndexVisited = 0;
       choiceTarget = null;
@@ -1476,194 +1298,137 @@ if (!choiceTarget && currentPage >= 19 && currentPage <= 26) {
       currentPdfUrl = "";
       currentPdfRole = "";
       pdfScrollTop = 0;
-
       Object.keys(solvedPages).forEach(k => delete solvedPages[k]);
       [20,21,22,23].forEach(pageNum => selectionState[pageNum] = "");
-
       document.querySelectorAll("[data-savekey]").forEach(el => {
         el.value = "";
         delete el.dataset.opened;
       });
-
       drawings.draw16 = [];
       redrawLines("draw16");
       exitPdfMode();
       showPage(1);
-
       isApplyingRemoteData = false;
     }
-
     async function registerUser() {
-      const usernameInput = document.getElementById("student-username");
-      const passwordInput = document.getElementById("student-password");
-
-      const username = usernameInput.value.trim().toLowerCase();
+      const usernameInput = document.getElementById("auth-username");
+      const passwordInput = document.getElementById("auth-password");
+      const rawUsername = usernameInput.value || "";
+      const username = rawUsername.trim().toLowerCase();
       const password = passwordInput.value;
-
       if (!username || !password) {
         setAuthStatus("Enter username and password", true);
+        setAuthModalStatus("Enter username and password.", true);
         return;
       }
-
+      if (/\s/.test(rawUsername)) {
+        setAuthStatus("Username cannot contain spaces", true);
+        setAuthModalStatus("Username cannot contain spaces.", true);
+        return;
+      }
       setAuthStatus("Registering...");
+      setAuthModalStatus("Registering...", false);
       try {
         const result = await apiFetch("/api/register", {
           method: "POST",
           body: JSON.stringify({ username, password, appId: APP_ID })
         });
-
         saveSessionLocally(result.token, result.username || username);
-if (result.saveData && payloadHasMeaningfulProgress(result.saveData)) {
-  await applyProgressPayload(result.saveData);
-}
         passwordInput.value = "";
+        if (result.saveData && typeof result.saveData === "object") {
+          await applyProgressPayload(result.saveData);
+        }
         setSaveStatus("Loaded");
+        setAuthModalStatus("Account created.", false);
+        closeAuthOverlay();
       } catch (err) {
         setAuthStatus(err.message || "Register failed", true);
+        setAuthModalStatus(err.message || "Register failed", true);
       }
     }
-
-async function loginUser() {
-  const usernameInput = document.getElementById("student-username");
-  const passwordInput = document.getElementById("student-password");
-
-  const username = usernameInput.value.trim().toLowerCase();
-  const password = passwordInput.value;
-
-  if (!username || !password) {
-    setAuthStatus("Enter username and password", true);
-    return;
-  }
-
-  setAuthStatus("Logging in...");
-  try {
-    const localPayload = buildProgressPayload();
-
-    const result = await apiFetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({ username, password, appId: APP_ID })
-    });
-
-    saveSessionLocally(result.token, result.username || username);
-    passwordInput.value = "";
-
-    // IMPORTANT: load the real remote save after login
-    let remotePayload = {};
-    try {
-      const loadResult = await apiFetch("/api/load?appId=" + encodeURIComponent(APP_ID), {
-        method: "GET"
-      });
-      remotePayload = (loadResult && loadResult.saveData && typeof loadResult.saveData === "object")
-        ? loadResult.saveData
-        : {};
-    } catch (err) {
-      console.error("Could not load remote save after login:", err);
-      remotePayload = (result.saveData && typeof result.saveData === "object")
-        ? result.saveData
-        : {};
-    }
-
-    const localHas = payloadHasMeaningfulProgress(localPayload);
-    const remoteHas = payloadHasMeaningfulProgress(remotePayload);
-
-    if (localHas && remoteHas) {
-      const localScore = getPayloadProgressScore(localPayload);
-      const remoteScore = getPayloadProgressScore(remotePayload);
-
-      if (localScore > remoteScore) {
-        setSaveStatus("Saving...");
-        await saveProgressToServer();
-        setSaveStatus("Saved");
-      } else {
-        await applyProgressPayload(remotePayload);
-        setSaveStatus("Loaded");
+    async function loginUser() {
+      const usernameInput = document.getElementById("auth-username");
+      const passwordInput = document.getElementById("auth-password");
+      const rawUsername = usernameInput.value || "";
+      const username = rawUsername.trim().toLowerCase();
+      const password = passwordInput.value;
+      if (!username || !password) {
+        setAuthStatus("Enter username and password", true);
+        setAuthModalStatus("Enter username and password.", true);
+        return;
       }
-    } else if (remoteHas) {
-      await applyProgressPayload(remotePayload);
-      setSaveStatus("Loaded");
-    } else if (localHas) {
-      setSaveStatus("Saving...");
-      await saveProgressToServer();
-      setSaveStatus("Saved");
-    } else {
-      setSaveStatus("Loaded");
+      if (/\s/.test(rawUsername)) {
+        setAuthStatus("Username cannot contain spaces", true);
+        setAuthModalStatus("Username cannot contain spaces.", true);
+        return;
+      }
+      setAuthStatus("Logging in...");
+      setAuthModalStatus("Logging in...", false);
+      try {
+        const result = await apiFetch("/api/login", {
+          method: "POST",
+          body: JSON.stringify({ username, password, appId: APP_ID })
+        });
+        saveSessionLocally(result.token, result.username || username);
+        passwordInput.value = "";
+        await loadProgressFromServer();
+        setAuthModalStatus("Logged in.", false);
+        closeAuthOverlay();
+      } catch (err) {
+        setAuthStatus(err.message || "Login failed", true);
+        setAuthModalStatus(err.message || "Login failed", true);
+      }
     }
-  } catch (err) {
-    setAuthStatus(err.message || "Login failed", true);
-  }
-}
-
     async function loadProgressFromServer() {
-      const result = await apiFetch("/api/load?appId=" + encodeURIComponent(APP_ID), {
-        method: "GET"
-      });
-
+      const result = await apiFetch("/api/load?appId=" + encodeURIComponent(APP_ID), { method: "GET" });
       if (result.username) {
         loggedInUsername = result.username;
         localStorage.setItem(SESSION_STORAGE.username, loggedInUsername);
       }
-
       updateAuthUI();
       await applyProgressPayload(result.saveData || {});
       setSaveStatus("Loaded");
     }
-
-async function flushPendingSaveBeforeLogout() {
-  clearTimeout(autoSaveTimer);
-  autoSaveTimer = null;
-
-  if (!authToken || isApplyingRemoteData) return;
-
-  if (saveInFlight) {
-    saveQueued = true;
-    while (saveInFlight) {
-      await wait(80);
+    async function flushPendingSaveBeforeLogout() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+      if (!authToken || isApplyingRemoteData) return;
+      if (saveInFlight) {
+        saveQueued = true;
+        while (saveInFlight) await wait(80);
+      }
+      await saveProgressToServer();
+      while (saveInFlight) await wait(80);
     }
-  }
-
-  await saveProgressToServer();
-
-  while (saveInFlight) {
-    await wait(80);
-  }
-}
-    
-async function logout() {
-  try {
-    setSaveStatus("Saving...");
-    await flushPendingSaveBeforeLogout();
-  } catch (err) {
-    console.error(err);
-  }
-
-  try {
-    if (authToken) {
-      await apiFetch("/api/logout", {
-        method: "POST",
-        body: "{}"
-      });
+    async function logout() {
+      try {
+        setSaveStatus("Saving...");
+        await flushPendingSaveBeforeLogout();
+      } catch (err) {
+        console.error(err);
+      }
+      try {
+        if (authToken) {
+          await apiFetch("/api/logout", { method: "POST", body: "{}" });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+      const prefill = loggedInUsername || "";
+      clearSessionLocally();
+      resetLocalProgressState();
+      setSaveStatus("Not saved yet");
+      openAuthOverlay(prefill);
     }
-  } catch (err) {
-    console.error(err);
-  }
-
-  clearSessionLocally();
-  document.getElementById("student-password").value = "";
-  resetLocalProgressState();
-  setSaveStatus("Logged out");
-}
-
     function initCloudFields() {
       document.querySelectorAll("[data-savekey]").forEach(el => {
         el.addEventListener("input", queueCloudSave);
         el.addEventListener("change", queueCloudSave);
       });
     }
-
     function initPdfJs() {
       pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     }
-
     function exitPdfMode() {
       const roleContainer = document.getElementById("role-container");
       const viewer = document.getElementById("pdfViewer");
@@ -1674,45 +1439,37 @@ async function logout() {
       status.style.display = "none";
       roleContainer.classList.remove("pdf-mode");
     }
-
     async function renderPdfIntoSecondCanvas(pdfUrl, roleName = "", targetScrollTop = 0) {
       currentPdfUrl = pdfUrl || "";
       currentPdfRole = roleName || "";
       pdfScrollTop = targetScrollTop || 0;
-
       const roleContainer = document.getElementById("role-container");
       const viewer = document.getElementById("pdfViewer");
       const status = document.getElementById("pdfStatus");
-
       roleContainer.classList.add("pdf-mode");
       viewer.style.display = "block";
       viewer.innerHTML = "";
       viewer.scrollTop = 0;
       status.style.display = "block";
       status.textContent = "Loading PDF...";
-
       try {
         const loadingTask = pdfjsLib.getDocument({ url: pdfUrl });
         const pdf = await loadingTask.promise;
         status.textContent = "Rendering pages...";
-
         const targetWidth = 920;
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           const page = await pdf.getPage(pageNum);
           const baseViewport = page.getViewport({ scale: 1 });
           const scale = targetWidth / baseViewport.width;
           const viewport = page.getViewport({ scale });
-
           const canvas = document.createElement("canvas");
           canvas.className = "pdfPageCanvas";
           canvas.width = Math.floor(viewport.width);
           canvas.height = Math.floor(viewport.height);
-
           const ctx = canvas.getContext("2d", { alpha: false });
           viewer.appendChild(canvas);
           await page.render({ canvasContext: ctx, viewport }).promise;
         }
-
         status.style.display = "none";
         viewer.scrollTop = targetScrollTop || 0;
         queueCloudSave();
@@ -1721,34 +1478,21 @@ async function logout() {
         status.textContent = "Failed to load PDF.";
       }
     }
-
     function initSecondCanvasHotspots() {
-      document.getElementById("hotspot-officer").addEventListener("click", function () {
-        renderPdfIntoSecondCanvas(ROLE_PDF_URLS.officer, "officer", 0);
-      });
-      document.getElementById("hotspot-professor").addEventListener("click", function () {
-        renderPdfIntoSecondCanvas(ROLE_PDF_URLS.professor, "professor", 0);
-      });
-      document.getElementById("hotspot-hacker").addEventListener("click", function () {
-        renderPdfIntoSecondCanvas(ROLE_PDF_URLS.hacker, "hacker", 0);
-      });
-
+      document.getElementById("hotspot-officer").addEventListener("click", function () { renderPdfIntoSecondCanvas(ROLE_PDF_URLS.officer, "officer", 0); });
+      document.getElementById("hotspot-professor").addEventListener("click", function () { renderPdfIntoSecondCanvas(ROLE_PDF_URLS.professor, "professor", 0); });
+      document.getElementById("hotspot-hacker").addEventListener("click", function () { renderPdfIntoSecondCanvas(ROLE_PDF_URLS.hacker, "hacker", 0); });
       document.getElementById("pdfViewer").addEventListener("scroll", function () {
         pdfScrollTop = this.scrollTop;
         queueCloudSave();
       });
     }
-
     (function () {
       const widget = document.getElementById("side-widget");
       const collapseBtn = document.getElementById("collapse-widget");
-
       widget.addEventListener("click", function () {
-        if (widget.classList.contains("collapsed")) {
-          widget.classList.remove("collapsed");
-        }
+        if (widget.classList.contains("collapsed")) widget.classList.remove("collapsed");
       });
-
       collapseBtn.addEventListener("click", function (e) {
         e.stopPropagation();
         widget.classList.add("collapsed");
@@ -1756,44 +1500,37 @@ async function logout() {
     })();
 
 let tutorialIndex = 0;
-
 function showTutorial() {
-  const alreadySeen = localStorage.getItem("gt10_tutorial_seen");
-  if (alreadySeen === "yes") return;
-
+  const alreadySeen = localStorage.getItem(TUTORIAL_STORAGE_KEY);
+  if (alreadySeen === "yes") {
+    maybeRequireAuthOverlay();
+    return;
+  }
   const overlay = document.getElementById("tutorialOverlay");
   const img = document.getElementById("tutorialImage");
-
   tutorialIndex = 0;
   img.src = TUTORIAL_IMAGES[tutorialIndex];
   overlay.style.display = "flex";
 }
-
 function nextTutorialSlide() {
   const overlay = document.getElementById("tutorialOverlay");
   const img = document.getElementById("tutorialImage");
-
   tutorialIndex++;
-
   if (tutorialIndex >= TUTORIAL_IMAGES.length) {
     overlay.style.display = "none";
-    localStorage.setItem("gt10_tutorial_seen", "yes");
+    localStorage.setItem(TUTORIAL_STORAGE_KEY, "yes");
+    maybeRequireAuthOverlay();
     return;
   }
-
   img.src = TUTORIAL_IMAGES[tutorialIndex];
 }
-
 function initTutorial() {
   const nextBtn = document.getElementById("tutorialNext");
   nextBtn.addEventListener("click", nextTutorialSlide);
-
-  // preload images
   TUTORIAL_IMAGES.forEach(url => {
     const pre = new Image();
     pre.src = url;
   });
-
   showTutorial();
 }
 
@@ -1805,12 +1542,17 @@ function initTutorial() {
       initCloudFields();
       initPdfJs();
       initSecondCanvasHotspots();
-
       restoreSessionLocally();
 
-      document.getElementById("registerBtn").addEventListener("click", registerUser);
-      document.getElementById("loginBtn").addEventListener("click", loginUser);
+      document.getElementById("authRegisterBtn").addEventListener("click", registerUser);
+      document.getElementById("authLoginBtn").addEventListener("click", loginUser);
       document.getElementById("logoutBtn").addEventListener("click", logout);
+      document.getElementById("auth-password").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          loginUser();
+        }
+      });
 
       document.getElementById("openFileBtn").addEventListener("click", function () {
         if (!currentPdfUrl) {
@@ -1824,15 +1566,12 @@ function initTutorial() {
         const overlay = document.createElement("div");
         overlay.id = "selection-overlay";
         document.body.appendChild(overlay);
-
         let startX = 0;
         let startY = 0;
         let selectionBox = null;
-
         overlay.addEventListener("mousedown", function (e) {
           startX = e.clientX;
           startY = e.clientY;
-
           selectionBox = document.createElement("div");
           selectionBox.id = "selection-box";
           selectionBox.style.left = startX + "px";
@@ -1840,7 +1579,6 @@ function initTutorial() {
           selectionBox.style.width = "0px";
           selectionBox.style.height = "0px";
           overlay.appendChild(selectionBox);
-
           function mouseMoveHandler(ev) {
             const currentX = ev.clientX;
             const currentY = ev.clientY;
@@ -1849,31 +1587,24 @@ function initTutorial() {
             selectionBox.style.width = Math.abs(currentX - startX) + "px";
             selectionBox.style.height = Math.abs(currentY - startY) + "px";
           }
-
           function mouseUpHandler() {
             overlay.removeEventListener("mousemove", mouseMoveHandler);
             overlay.removeEventListener("mouseup", mouseUpHandler);
-
             const boxRect = selectionBox.getBoundingClientRect();
             document.body.removeChild(overlay);
-
             const target = document.getElementById("container");
             const targetRect = target.getBoundingClientRect();
-
             html2canvas(target, { useCORS: true, allowTaint: false }).then(canvas => {
               const scaleFactor = canvas.width / targetRect.width;
               const sx = (boxRect.left - targetRect.left) * scaleFactor;
               const sy = (boxRect.top - targetRect.top) * scaleFactor;
               const sWidth = boxRect.width * scaleFactor;
               const sHeight = boxRect.height * scaleFactor;
-
               const croppedCanvas = document.createElement("canvas");
               croppedCanvas.width = sWidth;
               croppedCanvas.height = sHeight;
-
               const ctx = croppedCanvas.getContext("2d");
               ctx.drawImage(canvas, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
-
               croppedCanvas.toBlob(blob => {
                 if (!blob) return;
                 const item = new ClipboardItem({ "image/png": blob });
@@ -1886,12 +1617,12 @@ function initTutorial() {
               });
             });
           }
-
           overlay.addEventListener("mousemove", mouseMoveHandler);
           overlay.addEventListener("mouseup", mouseUpHandler);
         });
       });
 
+      showPage(currentPage);
       if (authToken) {
         try {
           await loadProgressFromServer();
@@ -1900,18 +1631,15 @@ function initTutorial() {
           clearSessionLocally();
           resetLocalProgressState();
         }
-      } else {
-        showPage(currentPage);
       }
       initTutorial();
     });
   </script>
   <div id="tutorialOverlay">
-  <div id="tutorialBox">
-    <img id="tutorialImage" src="" alt="Tutorial">
-    <button id="tutorialNext" type="button" aria-label="Next tutorial slide">›</button>
+    <div id="tutorialBox">
+      <img id="tutorialImage" src="" alt="Tutorial">
+      <button id="tutorialNext" type="button" aria-label="Next tutorial slide">›</button>
+    </div>
   </div>
-</div>
-<!-- ©XDY. All rights reserved. This code is the intellectual property of XDY. Unauthorized copying, reproduction, or redistribution is strictly prohibited. For educational use only. Contact the author for permissions. -->
 </body>
 </html>
