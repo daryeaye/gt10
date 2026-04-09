@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Coordinate Plane</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kelly+Slab&display=swap" rel="stylesheet">
+  <style>
+    :root { --square: min(82vmin, 820px); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Kelly Slab", system-ui, sans-serif;
+      background: #808080;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mode-message {
+      min-height: 28px;
+      font-size: 22px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .btn {
+      font-family: "Kelly Slab", system-ui, sans-serif;
+      font-size: 18px;
+      padding: 8px 14px;
+      border: 2px solid #111;
+      background: #fff;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: transform .05s, background .2s;
+      user-select: none;
+    }
+
+    .btn:hover { background: #f0f0f0; }
+    .btn:active { transform: translateY(1px); }
+    .btn.active { background: #111; color: #fff; }
+    .btn.hidden { display: none; }
+
+    .canvas-card {
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.65);
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+      padding: 10px;
+    }
+
+    .canvas-wrap {
+      width: var(--square);
+      height: var(--square);
+      display: grid;
+      place-items: center;
+      background: #ddd;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+    }
+
+    #board {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <button id="plotBtn" class="btn active" type="button">Plot Points</button>
+      <button id="lineBtn" class="btn" type="button">Draw Lines</button>
+      <button id="stopBtn" class="btn hidden" type="button">Stop</button>
+      <button id="deleteBtn" class="btn" type="button">Delete</button>
+    </div>
+
+    <div id="modeMessage" class="mode-message"></div>
+
+    <div class="canvas-card">
+      <div class="canvas-wrap">
+        <canvas id="board" width="1000" height="1000"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    const RIGHT_IMAGE_URL = 'https://daryeaye.github.io/integer/InS4.jpg';
+
+    const POINT_RADIUS = 4;
+    const HIT_TOL_POINT = 10;
+    const HIT_TOL_LINE = 8;
+
+    const board = document.getElementById('board');
+    const ctx = board.getContext('2d');
+
+    const plotBtn = document.getElementById('plotBtn');
+    const lineBtn = document.getElementById('lineBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const modeMessage = document.getElementById('modeMessage');
+
+    let mode = 'plot';
+    let paused = false;
+    let lineChainActive = false;
+    let lastPointId = null;
+    let nextPointId = 1;
+
+    const points = [];
+    const lines = [];
+
+    let rightImg = null;
+    let rightRect = { x: 0, y: 0, w: 0, h: 0 };
+
+    const STORAGE_KEY = 'spooky-reflection-2::' + RIGHT_IMAGE_URL;
+
+    function saveState() {
+      try {
+        const payload = {
+          v: 1,
+          points,
+          lines,
+          nextPointId
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('saveState failed:', e);
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (!data || data.v !== 1) return;
+
+        points.splice(0, points.length, ...(data.points || []));
+        lines.splice(0, lines.length, ...(data.lines || []));
+        nextPointId = Number.isInteger(data.nextPointId)
+          ? data.nextPointId
+          : (points.reduce((m, p) => Math.max(m, p.id || 0), 0) + 1);
+      } catch (e) {
+        console.warn('loadState failed:', e);
+      }
+    }
+
+    function resizeToCSS(canvas) {
+      const w = Math.floor(canvas.clientWidth);
+      const h = Math.floor(canvas.clientHeight);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    }
+
+    function drawImageFitted(ctx, img, cw, ch) {
+      const ir = img.width / img.height;
+      const cr = cw / ch;
+      let dw, dh, dx, dy;
+
+      if (cr > ir) {
+        dh = ch;
+        dw = dh * ir;
+        dx = (cw - dw) / 2;
+        dy = 0;
+      } else {
+        dw = cw;
+        dh = dw / ir;
+        dx = 0;
+        dy = (ch - dh) / 2;
+      }
+
+      ctx.drawImage(img, dx, dy, dw, dh);
+      return { x: dx, y: dy, w: dw, h: dh };
+    }
+
+    function imgToCanvas(u, v) {
+      return {
+        x: rightRect.x + u * rightRect.w,
+        y: rightRect.y + v * rightRect.h
+      };
+    }
+
+    function canvasToImg(x, y) {
+      const u = (x - rightRect.x) / rightRect.w;
+      const v = (y - rightRect.y) / rightRect.h;
+      if (u < 0 || u > 1 || v < 0 || v > 1) return null;
+      return { u, v };
+    }
+
+    function getCanvasPos(evt) {
+      const r = board.getBoundingClientRect();
+      return {
+        x: (evt.clientX - r.left) * (board.width / r.width),
+        y: (evt.clientY - r.top) * (board.height / r.height)
+      };
+    }
+
+    function dist2(x1, y1, x2, y2) {
+      const dx = x1 - x2, dy = y1 - y2;
+      return dx * dx + dy * dy;
+    }
+
+    function getPointById(id) {
+      return points.find(p => p.id === id) || null;
+    }
+
+    function nearestPointId(x, y, tol = HIT_TOL_POINT) {
+      let best = null, bestD2 = tol * tol;
+      for (const p of points) {
+        const pc = imgToCanvas(p.u, p.v);
+        const d2 = dist2(x, y, pc.x, pc.y);
+        if (d2 <= bestD2) {
+          bestD2 = d2;
+          best = p.id;
+        }
+      }
+      return best;
+    }
+
+    function pointToSegmentDistance(x, y, ax, ay, bx, by) {
+      const ABx = bx - ax, ABy = by - ay, APx = x - ax, APy = y - ay;
+      const ab2 = ABx * ABx + ABy * ABy;
+      if (!ab2) return Math.sqrt(dist2(x, y, ax, ay));
+      let t = (APx * ABx + APy * ABy) / ab2;
+      t = Math.max(0, Math.min(1, t));
+      const cx = ax + t * ABx, cy = ay + t * ABy;
+      return Math.sqrt(dist2(x, y, cx, cy));
+    }
+
+    function nearestLineIndex(x, y, tol = HIT_TOL_LINE) {
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const L = lines[i], a = getPointById(L.p1), b = getPointById(L.p2);
+        if (!a || !b) continue;
+        const A = imgToCanvas(a.u, a.v), B = imgToCanvas(b.u, b.v);
+        const d = pointToSegmentDistance(x, y, A.x, A.y, B.x, B.y);
+        if (d <= tol) return i;
+      }
+      return -1;
+    }
+
+    function deletePointById(id) {
+      const idx = points.findIndex(p => p.id === id);
+      if (idx >= 0) points.splice(idx, 1);
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].p1 === id || lines[i].p2 === id) lines.splice(i, 1);
+      }
+    }
+
+    function redraw() {
+      resizeToCSS(board);
+      ctx.clearRect(0, 0, board.width, board.height);
+
+      if (rightImg && rightImg.complete && rightImg.naturalWidth) {
+        rightRect = drawImageFitted(ctx, rightImg, board.width, board.height);
+      } else {
+        rightRect = { x: 0, y: 0, w: board.width, h: board.height };
+      }
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#000';
+      for (const L of lines) {
+        const a = getPointById(L.p1), b = getPointById(L.p2);
+        if (!a || !b) continue;
+        const A = imgToCanvas(a.u, a.v), B = imgToCanvas(b.u, b.v);
+        ctx.beginPath();
+        ctx.moveTo(A.x, A.y);
+        ctx.lineTo(B.x, B.y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = 'red';
+      for (const p of points) {
+        const C = imgToCanvas(p.u, p.v);
+        ctx.beginPath();
+        ctx.arc(C.x, C.y, POINT_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (mode === 'line' && lineChainActive && lastPointId != null) {
+        const sp = getPointById(lastPointId);
+        if (sp) {
+          const S = imgToCanvas(sp.u, sp.v);
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(S.x, S.y, POINT_RADIUS + 4, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+    }
+
+    function showStopButton(show) {
+      stopBtn.classList.toggle('hidden', !show);
+    }
+
+    function updateModeMessage() {
+      if (mode === 'plot') {
+        modeMessage.textContent = 'Click anywhere in the coordinate plane to make a point.';
+      } else if (mode === 'line' && !paused) {
+        modeMessage.textContent = 'You can draw a line by selecting any two point.';
+      } else if (mode === 'delete') {
+        modeMessage.textContent = 'Click any point or line to delete.';
+      } else {
+        modeMessage.textContent = '';
+      }
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      paused = false;
+      lineChainActive = (mode === 'line') ? lineChainActive : false;
+      if (mode !== 'line') lastPointId = null;
+
+      plotBtn.classList.toggle('active', mode === 'plot');
+      lineBtn.classList.toggle('active', mode === 'line');
+      deleteBtn.classList.toggle('active', mode === 'delete');
+      showStopButton(mode === 'line');
+      updateModeMessage();
+      redraw();
+    }
+
+    plotBtn.addEventListener('click', () => setMode('plot'));
+    lineBtn.addEventListener('click', () => setMode('line'));
+    deleteBtn.addEventListener('click', () => setMode('delete'));
+
+    stopBtn.addEventListener('click', () => {
+      paused = true;
+      lineChainActive = false;
+      lastPointId = null;
+      updateModeMessage();
+      redraw();
+    });
+
+    board.addEventListener('click', (evt) => {
+      if (paused) return;
+
+      const { x, y } = getCanvasPos(evt);
+
+      if (mode === 'plot') {
+        const uv = canvasToImg(x, y);
+        if (!uv) return;
+        points.push({ id: nextPointId++, u: uv.u, v: uv.v });
+        saveState();
+        return redraw();
+      }
+
+      if (mode === 'line') {
+        const hitId = nearestPointId(x, y);
+        if (hitId == null) return;
+
+        if (!lineChainActive) {
+          lineChainActive = true;
+          lastPointId = hitId;
+          return redraw();
+        } else if (hitId !== lastPointId) {
+          lines.push({ p1: lastPointId, p2: hitId });
+          saveState();
+          lastPointId = hitId;
+          return redraw();
+        }
+      }
+
+      if (mode === 'delete') {
+        const pid = nearestPointId(x, y);
+        if (pid != null) {
+          deletePointById(pid);
+          saveState();
+          return redraw();
+        }
+
+        const li = nearestLineIndex(x, y);
+        if (li >= 0) {
+          lines.splice(li, 1);
+          saveState();
+          return redraw();
+        }
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (mode === 'line' && e.key === 'Escape') {
+        lineChainActive = false;
+        lastPointId = null;
+        redraw();
+      }
+    });
+
+    function loadImage(url, cb) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => cb(img);
+      img.src = url;
+    }
+
+    function init() {
+      loadImage(RIGHT_IMAGE_URL, (img) => {
+        rightImg = img;
+        redraw();
+      });
+
+      loadState();
+      window.addEventListener('resize', redraw);
+
+      setMode('plot');
+      redraw();
+    }
+
+    init();
+  })();
+  </script>
+</body>
+</html>
