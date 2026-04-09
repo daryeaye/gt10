@@ -619,6 +619,10 @@
             <input type="text" class="textbox cloud-field" data-savekey="p9-1" style="left:561px; top:257px; width:120px; height:35px;">
             <input type="text" class="textbox cloud-field" data-savekey="p9-2" style="left:542px; top:311px; width:120px; height:35px;">
             <textarea class="textbox cloud-field" data-savekey="p9-3" style="left:596px; top:365px; width:256px; height:69px;"></textarea>
+            <button id="coordPlaneBtn9" class="hotspot" type="button"
+                    style="left:43px; top:421px; width:368px; height:47px;">
+              Click me for a coordinate plane
+            </button>
           </div>
           <div id="page10" class="page">
             <img class="page-image" src="https://daryeaye.github.io/gt10/10-10.jpg" alt="Page 10" loading="lazy" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -626,6 +630,10 @@
             <input type="text" class="textbox cloud-field" data-savekey="p10-2" style="left:568px; top:287px; width:120px; height:35px;">
             <input type="text" class="textbox cloud-field" data-savekey="p10-3" style="left:707px; top:337px; width:120px; height:35px;">
             <textarea class="textbox cloud-field" data-savekey="p10-4" style="left:622px; top:389px; width:256px; height:69px;"></textarea>
+            <button id="coordPlaneBtn10" class="hotspot" type="button"
+                    style="left:49px; top:340px; width:368px; height:47px;">
+              Click me for a coordinate plane
+            </button>
           </div>
           <div id="page11" class="page">
             <img class="page-image" src="https://daryeaye.github.io/gt10/10-11.jpg" alt="Page 11" loading="lazy" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -1152,6 +1160,24 @@ const TUTORIAL_STORAGE_KEY = "gt10_tutorial_seen";
         });
       });
     }
+    function initCoordinatePlaneButtons() {
+      const url = "https://daryeaye.github.io/gt10/cp.html";
+
+      const btn9 = document.getElementById("coordPlaneBtn9");
+      const btn10 = document.getElementById("coordPlaneBtn10");
+
+      if (btn9) {
+        btn9.addEventListener("click", function () {
+          window.open(url, "_blank");
+        });
+      }
+
+      if (btn10) {
+        btn10.addEventListener("click", function () {
+          window.open(url, "_blank");
+        });
+      }
+    }
     function getInputSnapshot() {
       const snapshot = {};
       document.querySelectorAll("[data-savekey]").forEach(input => {
@@ -1538,6 +1564,7 @@ function initTutorial() {
       initBranchButtons();
       initQuizHotspots();
       initRewardInputs();
+      initCoordinatePlaneButtons();
       initCloudFields();
       initPdfJs();
       initSecondCanvasHotspots();
